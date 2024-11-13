@@ -1,11 +1,10 @@
 function installjava([int32]$ver,[switch]$testing){
 
-       $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
-       $isadmin= $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-        
-    if (!$isadmin)  {
-          Start-Process $PsHome\powershell.exe -Verb RunAs -ArgumentList ('-noprofile -file "{0}" -elevated' -f ($myinvocation.MyCommand.Definition))
-          }
+    $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    if (!$isAdmin) {
+        Start-Process powershell.exe -Verb RunAs -ArgumentList "-File `"$PSCommandPath`""
+        Exit
+    }
 
 $jdk_folder="$PSScriptRoot\java\"
 if (!($env:JAVA_HOME -eq $jdk_folder)){
