@@ -81,6 +81,11 @@ function click([string]$imagef){
 installjava 23
 downloadsikuli
 $clicknames=(get-childitem $PSScriptRoot\click.sikuli\png\ -Directory).name
+$clickfiles=(get-childitem $PSScriptRoot\click.sikuli\png\ -r |Where-Object{$_.name -match "png"} )
+if(!$clickfiles){
+    Write-Output "no png files is found"
+    exit
+}
 foreach($clickname in $clicknames){
 click $clickname
 }
