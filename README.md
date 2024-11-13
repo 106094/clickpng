@@ -1,5 +1,5 @@
 Requirement: windows system
-Target: click the matched image
+<br>Target: click the matched image
 
 - installjava 23  # for Java version 23 download (install)
 - downloadsikuli # for sikulixide-2.0.5.jar download
