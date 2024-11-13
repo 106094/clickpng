@@ -38,9 +38,9 @@ else{
 }
 function downloadsikuli{
     $sikulipath="$PSScriptRoot\sikulixide-2.0.5.jar"
-    if(!(test-path  $sikulifolder)){
+    if(!(test-path  $sikulipath)){
         Invoke-WebRequest  "https://launchpad.net/sikuli/sikulix/2.0.5/+download/sikulixide-2.0.5.jar" -OutFile $sikulipath
-        if(test-path  $sikulifolder){
+        if(test-path  $sikulipath){
             Write-Output "sikuli downloaded ok"
            }
         }
