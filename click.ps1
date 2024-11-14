@@ -78,7 +78,31 @@ function click([string]$imagef){
     }
 
 }
+function capture ([string]$foldername){
+    $capturef="$PSScriptRoot\capture.sikuli\_capture.png"
+    if(test-path  $capturef){
+    try{
+        remove-item $capturef -Force
+    }
+    catch{
+      write-output "error to delete capture file. Need to check"
+      exit
+    }
+    }
+    java -jar "$PSScriptRoot\sikulixide-2.0.5.jar" -r $PSScriptRoot\capture.sikuli\ -v -f $PSScriptRoot\SikuliLog.txt
+    #popup the name of the capture folder
+    $pngfolder="$PSScriptRoot\capture.sikuli\png\$($foldername)\"
+    if (!(test-path $pngfolder)){
+        New-Item -Path $pngfolder -ItemType Directory|out-null
+    }
+    $filepng=(get-date -Format "yyMMddHHmmss"|Out-String).trim()+".png"
+    $filefull=join-path $pngfolder $filepng
+    copy-item -path "$PSScriptRoot\capture.sikuli\_capture.png" -Destination $filefull
+    remove-item $capturef -Force
+}
 
+
+<# execusions
 installjava 23
 downloadsikuli
 $clicknames=(get-childitem $PSScriptRoot\click.sikuli\png\ -Directory).name
@@ -90,3 +114,4 @@ if(!$clickfiles){
 foreach($clickname in $clicknames){
 click $clickname
 }
+#>
