@@ -80,7 +80,7 @@ function click([string]$imagef){
 }
 function capture ([string]$foldername){
     $capturef="$PSScriptRoot\capture.sikuli\_capture.png"
-    if(test-path  $capturef){
+    if(test-path  $capturef -ea SilentlyContinue){
     try{
         remove-item $capturef -Force
     }
