@@ -6,18 +6,18 @@ function installjava([int32]$ver,[switch]$testing){
         Exit
     }
 
-$jdk_folder="$PSScriptRoot\java\"
+$jdk_folder="$psroot\java\"
 if (!($env:JAVA_HOME -eq $jdk_folder)){
     Write-Output "need install java"
     $ver=23
     $downloadlink=((Invoke-WebRequest https://jdk.java.net/$($ver)/).links|Where-Object {$_.href -match "windows" -and $_.innerHTML -eq "zip"}).href
-    $jdk_zip_file="$PSScriptRoot\java.zip"
+    $jdk_zip_file="$psroot\java.zip"
     if(!$testing){
     Invoke-WebRequest $downloadlink -OutFile $jdk_zip_file
-    Expand-Archive -Path $jdk_zip_file -DestinationPath "$PSScriptRoot\java"
+    Expand-Archive -Path $jdk_zip_file -DestinationPath "$psroot\java"
     Remove-Item -Path $jdk_zip_file
     }
-    $javabin=(get-childitem $PSScriptRoot\java\ -Directory -r |Where-Object{$_.name -match "bin"}).FullName
+    $javabin=(get-childitem $psroot\java\ -Directory -r |Where-Object{$_.name -match "bin"}).FullName
     # Set Environment Variables
     $path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
     [System.Environment]::SetEnvironmentVariable('Path', $path + ';' + $javabin, 'Machine')
@@ -38,7 +38,7 @@ else{
 }
 }
 function downloadsikuli{
-    $sikulipath="$PSScriptRoot\sikulixide-2.0.5.jar"
+    $sikulipath="$psroot\sikulixide-2.0.5.jar"
     if(!(test-path  $sikulipath)){
         Invoke-WebRequest  "https://launchpad.net/sikuli/sikulix/2.0.5/+download/sikulixide-2.0.5.jar" -OutFile $sikulipath
         if(test-path  $sikulipath){
@@ -53,9 +53,9 @@ function downloadsikuli{
 
 function click([string]$imagef){
     $success=$false
-    $pngs=Get-ChildItem ($PSScriptRoot+"\click.sikuli\png\$($imagef)\*.png")
-    $logspath="$PSScriptRoot\SikuliLogs.txt"
-    $clickpng="$PSScriptRoot\click.sikuli\click.png"
+    $pngs=Get-ChildItem ($psroot+"\click.sikuli\png\$($imagef)\*.png")
+    $logspath="$psroot\SikuliLogs.txt"
+    $clickpng="$psroot\click.sikuli\click.png"
     if(!(test-path  $logspath)){
         New-Item -Path $logspath -ItemType File|out-null
     }
@@ -63,8 +63,8 @@ function click([string]$imagef){
         $pngpath=$png.FullName
         $pngname=$png.Name
         Copy-Item -path $pngpath -Destination $clickpng -force
-        java -jar "$PSScriptRoot\sikulixide-2.0.5.jar" -r $PSScriptRoot\click.sikuli\ -v -f $PSScriptRoot\SikuliLog.txt
-        $resultclick=get-content $PSScriptRoot\SikuliLog.txt
+        java -jar "$psroot\sikulixide-2.0.5.jar" -r $psroot\click.sikuli\ -v -f $psroot\SikuliLog.txt
+        $resultclick=get-content $psroot\SikuliLog.txt
         if( $resultclick -like "*CLICK on*"){
             $success=$true
             break  
@@ -79,7 +79,7 @@ function click([string]$imagef){
 
 }
 function capture ([string]$foldername){
-    $capturef="$PSScriptRoot\capture.sikuli\_capture.png"
+    $capturef="$psroot\capture.sikuli\_capture.png"
     if(test-path  $capturef -ea SilentlyContinue){
     try{
         remove-item $capturef -Force
@@ -89,24 +89,31 @@ function capture ([string]$foldername){
       exit
     }
     }
-    java -jar "$PSScriptRoot\sikulixide-2.0.5.jar" -r $PSScriptRoot\capture.sikuli\ -v -f $PSScriptRoot\SikuliLog.txt
+    java -jar "$psroot\sikulixide-2.0.5.jar" -r $psroot\capture.sikuli\ -v -f $psroot\SikuliLog.txt
     #popup the name of the capture folder
-    $pngfolder="$PSScriptRoot\click.sikuli\png\$($foldername)\"
+    $pngfolder="$psroot\click.sikuli\png\$($foldername)\"
     if (!(test-path $pngfolder)){
         New-Item -Path $pngfolder -ItemType Directory|out-null
     }
     $filepng=(get-date -Format "yyMMddHHmmss"|Out-String).trim()+".png"
     $filefull=join-path $pngfolder $filepng
-    copy-item -path "$PSScriptRoot\capture.sikuli\_capture.png" -Destination $filefull
+    copy-item -path "$psroot\capture.sikuli\_capture.png" -Destination $filefull
     remove-item $capturef -Force
 }
 
+if($PSScriptRoot){
+    $psroot=$PSScriptRoot
+}
+else{
+    $psroot="C:\tmp\click"
+}
 
 <# execusions
 installjava 23
 downloadsikuli
-$clicknames=(get-childitem $PSScriptRoot\click.sikuli\png\ -Directory).name
-$clickfiles=(get-childitem $PSScriptRoot\click.sikuli\png\ -r |Where-Object{$_.name -match "png"} )
+capture "1"
+$clicknames=(get-childitem $psroot\click.sikuli\png\ -Directory).name
+$clickfiles=(get-childitem $psroot\click.sikuli\png\ -r |Where-Object{$_.name -match "png"} )
 if(!$clickfiles){
     Write-Output "no png files is found"
     exit
