@@ -112,6 +112,7 @@ else{
 installjava 23
 downloadsikuli
 capture "1"
+#click folder by folder
 $clicknames=(get-childitem $psroot\click.sikuli\png\ -Directory).name
 $clickfiles=(get-childitem $psroot\click.sikuli\png\ -r |Where-Object{$_.name -match "png"} )
 if(!$clickfiles){
