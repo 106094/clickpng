@@ -91,7 +91,7 @@ function capture ([string]$foldername){
     }
     java -jar "$PSScriptRoot\sikulixide-2.0.5.jar" -r $PSScriptRoot\capture.sikuli\ -v -f $PSScriptRoot\SikuliLog.txt
     #popup the name of the capture folder
-    $pngfolder="$PSScriptRoot\capture.sikuli\png\$($foldername)\"
+    $pngfolder="$PSScriptRoot\click.sikuli\png\$($foldername)\"
     if (!(test-path $pngfolder)){
         New-Item -Path $pngfolder -ItemType Directory|out-null
     }

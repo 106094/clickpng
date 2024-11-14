@@ -1,0 +1,1 @@
+saveCapture("Select a region", "capture")
